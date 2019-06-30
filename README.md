@@ -16,9 +16,11 @@ Dataset format RPKM and VCF file:
 
 Downloaded Files:
 GD462.GeneQuantRPKM.50FN.samplename.resk10.txt.gz  (86.6 MB)
+
 Chromosome 1-22 (44.61 GB)
 
 The dataset is available on the Geuvadis data browser webpage.
+
 Link: https://www.ebi.ac.uk/Tools/geuvadis-das/
 
 # Work Environment
