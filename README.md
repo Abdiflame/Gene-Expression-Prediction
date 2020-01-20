@@ -35,7 +35,3 @@ Used packages:
 * Benjamini-Hochberg: p.adjust {stats v. 3.5.2}
 * Ridge, Lasso, Enet: glmnet {glmnet v. 2.0-16}
 * Random Forest: randomForest {randomForest v. 4.6-14}
-
-# Thesis Manuscript
-
-https://drive.google.com/file/d/1WAMcSLrf-v_YD5qmyYtttOogrAlWY62F/view?usp=sharing
