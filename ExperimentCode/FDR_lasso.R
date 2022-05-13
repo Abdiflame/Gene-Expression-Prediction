@@ -24,7 +24,6 @@ lasso_rsq_results_log1<- list()
 ex_data <- list()
 lasso_lambda <- list()
 lasso_df <- list()
-dim(BH_gene)[2]
 
 for(i in 1:dim(BH_gene)[2])#1:dim(BH_gene)[2]
 {
@@ -44,7 +43,7 @@ for(i in 1:dim(BH_gene)[2])#1:dim(BH_gene)[2]
     
     print("START PVALUE")
     print(i)
-    anova(lm(ex_data[-testIndexes,end+1] ~ ex_data[-testIndexes,1]))[5]
+    
     for(p in 1:end)
     {
       l_p[p] <- anova(lm(ex_data[-testIndexes,end+1] ~ ex_data[-testIndexes,p]))[5][1,]
