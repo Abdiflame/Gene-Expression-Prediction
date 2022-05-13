@@ -3,10 +3,8 @@
 
 ### Load the dataset
 BH_gene <- read.table("geneExpPrediction/ResultsData/BH_gene6.txt")
-snp = read.table("geneExpPrediction/ResultsData/all_snps.txt")
-BH_passed_snp <- read.table("snp_inf22.txt")
-snps <- read.table("geneExpPrediction/ResultsData/snp_inf6.txt")
-genes68 <- read.table("geneExpPrediction/ResultsData/linear_mse_68.txt")
+BH_passed_snp <- read.table("geneExpPrediction/ResultsData/all_snps.txt")
+snps <- read.table("snp_inf22.txt")
 
 snp_log1 <- t(snps)
 kfold <- 5 # Dataset K-fold CrossValidation
