@@ -2,14 +2,16 @@
 #library(glmnet)
 
 ### Load the dataset
-BH_gene <- read.table("/home/lffraga/Table Data/BH_gene6.txt")
-BH_passed_snp <- read.table("/home/lffraga/Table Data/BH_passed_snps6.txt")
-snps <- read.table("/home/lffraga/Table Data/snp_inf6.txt")
+BH_gene <- read.table("geneExpPrediction/ResultsData/BH_gene6.txt")
+snp = read.table("geneExpPrediction/ResultsData/all_snps.txt")
+BH_passed_snp <- read.table("snp_inf22.txt")
+snps <- read.table("geneExpPrediction/ResultsData/snp_inf6.txt")
+genes68 <- read.table("geneExpPrediction/ResultsData/linear_mse_68.txt")
 
 snp_log1 <- t(snps)
 kfold <- 5 # Dataset K-fold CrossValidation
 k <- 5 # Iteration K-repetitions
-#folds <- sample(cut(seq(1,nrow(BH_gene)),breaks=kfold, labels=FALSE))
+folds <- sample(cut(seq(1,nrow(BH_gene)),breaks=kfold, labels=FALSE))
 
 start <- Sys.time()
 
@@ -22,10 +24,11 @@ lasso_rsq_results_log1<- list()
 ex_data <- list()
 lasso_lambda <- list()
 lasso_df <- list()
+dim(BH_gene)[2]
 
-for(i in genes68)#1:dim(BH_gene)[2]
+for(i in 1:dim(BH_gene)[2])#1:dim(BH_gene)[2]
 {
-  BH_passed_snp_tmp <- snp_log1[,na.omit(match(as.character(BH_passed_snp[,i]),colnames(snp_log1)))]
+  BH_passed_snp_tmp <- snp_log1
   ex_data_refresh <- cbind(BH_passed_snp_tmp,BH_gene[,i])
   
   for(j in 1:k){
@@ -38,8 +41,10 @@ for(i in genes68)#1:dim(BH_gene)[2]
     ### Make the FDR correction here?
     l_p <- list()
     end <- dim(ex_data)[2]-1
+    
     print("START PVALUE")
     print(i)
+    anova(lm(ex_data[-testIndexes,end+1] ~ ex_data[-testIndexes,1]))[5]
     for(p in 1:end)
     {
       l_p[p] <- anova(lm(ex_data[-testIndexes,end+1] ~ ex_data[-testIndexes,p]))[5][1,]
@@ -50,9 +55,7 @@ for(i in genes68)#1:dim(BH_gene)[2]
     snp_names_aux <- c(as.character(colnames(ex_data[,1:end])))  # Getting the SNPs names
     df_aux <- data.frame(snp_names_aux, auxVec)
     names(df_aux) <- c("SNP", "AdjPvalue")
-    #dim(df_aux)
     BH_snps_aux <- subset(df_aux, df_aux$AdjPvalue < 0.05)     # Applying the p-value threshold
-    dim(BH_snps_aux)
     
     if(dim(BH_snps_aux)[1]>1){
       ### Update ex_data
@@ -87,11 +90,13 @@ for(i in genes68)#1:dim(BH_gene)[2]
   print(cv.error.5_lasso)
   print(rsq_lasso1)
   print("Parameter")
-  print(lasso.fit$lambda)
-  lasso_lambda[i] <- lasso.fit$lambda
-  print("Number of Predictors")
-  print(lasso.fit$df)
-  lasso_df[i] <- lasso.fit$df
+  if(cv.error.5_lasso != 'NA'){
+    print(lasso.fit$lambda)
+    lasso_lambda[i] <- lasso.fit$lambda
+    print("Number of Predictors")
+    print(lasso.fit$df)
+    lasso_df[i] <- lasso.fit$df
+  }
   
   lasso_mse_results_log1 <- cbind(lasso_mse_results_log1, cv.error.5_lasso)
   lasso_rsq_results_log1 <- cbind(lasso_rsq_results_log1, rsq_lasso1)
