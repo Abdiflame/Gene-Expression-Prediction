@@ -14,16 +14,21 @@ Dataset format RPKM and VCF file:
 *	Gene Expression: RPKM – Reads Per Kilobase Million
 *	Genotypes: VCF – Variant Call Format
 
+
+The EMBL-EBI European Bioinformatics Institute webpage.
+
+Link: https://www.ebi.ac.uk
+
 Downloaded Files:
-GD462.GeneQuantRPKM.50FN.samplename.resk10.txt.gz  (86.6 MB)
+* GD462.GeneQuantRPKM.50FN.samplename.resk10.txt.gz (86.6 MB)
+
 https://www.ebi.ac.uk/arrayexpress/experiments/E-GEUV-1/files/analysis_results/
 
-Chromosome 1-22 (44.61 GB)
+* Chromosome 1-22 (44.61 GB)
+
 https://www.ebi.ac.uk/arrayexpress/experiments/E-GEUV-1/files/genotypes/
 
-The dataset is available on the Geuvadis data browser webpage.
 
-Link: https://www.ebi.ac.uk/Tools/geuvadis-das/
 
 # Work Environment
 Rstudio: Version 1.1.463
