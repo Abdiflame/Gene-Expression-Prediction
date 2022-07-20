@@ -1,10 +1,11 @@
+
 library(rowr)
-install.packages("rowr")
+install.packages("https://cran.r-project.org/src/contrib/Archive/rowr/rowr_1.1.3.tar.gz", repos = NULL, type="source")
 
 ### Load dataset
-snp_loc <- read.table("/home/lffraga/Table Data/snp_loc21.txt",header = TRUE)
-snp_inf <- read.table("/home/lffraga/Table Data/snp_inf21.txt",header = TRUE)
-gene <- read.table("/home/lffraga/Raw Data/GD462.GeneQuantRPKM.50FN.samplename.resk10.txt",header = TRUE)
+snp_loc <- read.table("snp_loc22.txt",header = TRUE)
+snp_inf <- read.table("snp_inf22.txt",header = TRUE)
+gene <- read.table("Downloads/GD462.GeneQuantRPKM.50FN.samplename.resk10.txt",header = TRUE)
 
 ### Gene expression match
 ### Select chromosome in gene expression dataset
@@ -62,5 +63,5 @@ end-start
 ################################################ FINAL PART END ################################################
 
 ### Saving data
-write.table(c[,-1],"/home/lffraga/Table Data/cis_snps_names_chr21b.txt")
-write.table(cis_matrix, "/home/lffraga/Table Data/cis_matrix_chr21b.txt")
+write.table(c[,-1],"cis_snps_names_chr22b.txt")
+write.table(cis_matrix, "cis_matrix_chr22b.txt")

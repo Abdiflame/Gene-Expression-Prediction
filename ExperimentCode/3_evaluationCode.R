@@ -2,27 +2,27 @@ install.packages("qqman")
 library(qqman)
 
 ### MSE
-sim_1_mse <- read.table("/home/lffraga/Results_Data/linear_mse.txt")
-sim_2a_mse <- read.table("/home/lffraga/Results_Data/simulation2a_1mb_mse_7.txt")
-sim_2b_mse <- read.table("/home/lffraga/Results_Data/simulation2b_1mb_mse_7.txt")
-sim_3a_mse <- read.table("/home/lffraga/Results_Data/simulation3a_mse_7.txt")
-sim_3b_mse <- read.table("/home/lffraga/Results_Data/simulation3b_mse_7.txt")
+sim_1_mse <- read.table("geneExpPrediction/ResultsData/linear_mse_68.txt")
+sim_2a_mse <- read.table("geneExpPrediction/ResultsData/scenario2a_total_mse.txt")
+sim_2b_mse <- read.table("geneExpPrediction/ResultsData/scenario2b_titak_mse.txt")
+# sim_3a_mse <- read.table("/home/dmk/geneExpPrediction/ResultsData/scenario3a_total_mse.txt")
+sim_3b_mse <- read.table("geneExpPrediction/ResultsData/scenario3b_total_mse.txt")
 
 colnames(sim_2a_mse) <- c("Ridge", "Lasso", "ENET", "RF")
 colnames(sim_2b_mse) <- c("Ridge", "Lasso", "ENET", "RF")
-colnames(sim_3a_mse) <- c("Ridge", "Lasso", "ENET", "RF")
+# colnames(sim_3a_mse) <- c("Ridge", "Lasso", "ENET", "RF")
 colnames(sim_3b_mse) <- c("Ridge", "Lasso", "ENET", "RF")
 
 ### RSQ
-sim_1_rsq <- read.table("/home/lffraga/Results_Data/linear_rsq.txt")
-sim_2a_rsq <- read.table("/home/lffraga/Results_Data/simulation2a_1mb_rsq_7.txt")
-sim_2b_rsq <- read.table("/home/lffraga/Results_Data/simulation2b_total_rsq.txt")
-sim_3a_rsq <- read.table("/home/lffraga/Results_Data/simulation3a_rsq_7.txt")
-sim_3b_rsq <- read.table("/home/lffraga/Results_Data/simulation3b_rsq_7.txt")
+sim_1_rsq <- read.table("geneExpPrediction/ResultsData/linear_rsq_68.txt")
+sim_2a_rsq <- read.table("geneExpPrediction/ResultsData/scenario2a_total_rsq.txt")
+sim_2b_rsq <- read.table("geneExpPrediction/ResultsData/scenario2b_total_rsq.txt")
+sim_3a_rsq <- read.table("geneExpPrediction/ResultsData/scenario3a_total_rsq.txt")
+sim_3b_rsq <- read.table("geneExpPrediction/ResultsData/scenario3b_total_rsq.txt")
 
-colnames(rsq) <- c("Ridge", "Lasso", "ENET", "RF")
+colnames(sim_2a_rsq) <- c("Ridge", "Lasso", "ENET", "RF")
 colnames(sim_2b_rsq) <- c("Ridge", "Lasso", "ENET", "RF")
-colnames(sim_3a_rsq) <- c("Ridge", "Lasso", "ENET", "RF")
+colnames(sim_3a_rsq) <- c("Ridge", "Lasso", "ENET")
 colnames(sim_3b_rsq) <- c("Ridge", "Lasso", "ENET", "RF")
 
 sim_1_mse <- t(sim_1_mse)
@@ -47,12 +47,12 @@ par(mfrow=c(1,1))
 t<-c(0,1)
 
 ### Scenario 1
-plot(rsq1[,2],rsq1[,3], xlim = t, ylim=t, pch = 21, col="royalblue", cex=2, bg="lightblue", lwd=1, main = "R-Square",
+plot(sim_2a_rsq[,2],sim_2a_rsq[,3], xlim = t, ylim=t, pch = 21, col="royalblue", cex=2, bg="lightblue", lwd=1, main = "R-Square",
      xlab = "Lasso", ylab = "ENET")
 abline(0,1,col="red", lwd = 2)
 
 ### Scenario 2
-plot(rsq2[,2],rsq2[,3], xlim = t, ylim=t, pch = 21, col="royalblue", cex=2, bg="lightblue", lwd=1, main = "R-Square",
+plot(sim_3a_rsq[,2],sim_3a_rsq[,3], xlim = t, ylim=t, pch = 21, col="royalblue", cex=2, bg="lightblue", lwd=1, main = "R-Square",
      xlab = "Lasso", ylab = "ENET")
 abline(0,1,col="red", lwd = 2)
 
