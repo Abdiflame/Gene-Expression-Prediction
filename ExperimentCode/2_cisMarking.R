@@ -1,10 +1,11 @@
 library(rowr)
-install.packages("rowr")
+#install.packages("rowr")
+## If rowr is not found, download a old version and install it by archive
 
 ### Load dataset
-snp_loc <- read.table("/home/lffraga/Table Data/snp_loc21.txt",header = TRUE)
-snp_inf <- read.table("/home/lffraga/Table Data/snp_inf21.txt",header = TRUE)
-gene <- read.table("/home/lffraga/Raw Data/GD462.GeneQuantRPKM.50FN.samplename.resk10.txt",header = TRUE)
+snp_loc <- read.table("../Dataset/snp_loc21.txt",header = TRUE)
+snp_inf <- read.table("../Dataset/snp_inf21.txt",header = TRUE)
+gene <- read.table("../Dataset/GD462.GeneQuantRPKM.50FN.samplename.resk10.txt",header = TRUE)
 
 ### Gene expression match
 ### Select chromosome in gene expression dataset
@@ -12,7 +13,8 @@ gene_loc <- gene[grep("^21$", gene[,3]),]
 geneLocation <- gene_loc[,4]
 snps <- t(snp_inf)
 
-### Cis-SNPs marking
+#######################################
+### Slice snps by gene distance-location
 start<-Sys.time()
 
 cis_matrix <- list() 
@@ -35,7 +37,16 @@ rownames(cis_matrix) <- snp_loc[,3]
 end<-Sys.time()
 end-start
 
-################################################ FINAL PART START ################################################
+#######################################
+### cis-Marking - Start
+#cbind.fill <- function(...){
+#  nm <- list(...) 
+#  nm <- lapply(nm, as.matrix)
+#  n <- max(sapply(nm, nrow)) 
+#  do.call(cbind, lapply(nm, function (x) 
+#    rbind(x, matrix(, n-nrow(x), ncol(x))))) 
+#}
+
 start<-Sys.time()
 
 l <- list()
@@ -54,13 +65,14 @@ dim(c)
 
 for(i in 1:dim(cis_matrix)[2])
 {
-  c <- cbind.fill(c, names(cis_matrix[!is.na(cis_matrix[,i]),i]), fill = NA) ## errado aqui
+  c <- cbind.fill(c, names(cis_matrix[!is.na(cis_matrix[,i]),i]), fill = NA)
 }
 
 end<-Sys.time()
 end-start
-################################################ FINAL PART END ################################################
+### cis-Marking - End
+#######################################
 
 ### Saving data
-write.table(c[,-1],"/home/lffraga/Table Data/cis_snps_names_chr21b.txt")
-write.table(cis_matrix, "/home/lffraga/Table Data/cis_matrix_chr21b.txt")
+write.table(c[,-1],"../Dataset/cis_snps_names_chr21.txt")
+write.table(cis_matrix, "../Dataset/cis_matrix_chr21.txt")

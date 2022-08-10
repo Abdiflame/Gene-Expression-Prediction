@@ -2,7 +2,8 @@ install.packages("vcfR")
 library(vcfR)
 
 #LOAD DATASET
-snp <- read.vcfR("/home/lffraga/Raw Data/GEUVADIS.chr11.PH1PH2_465.IMPFRQFILT_BIALLELIC_PH.annotv2.genotypes.vcf.gz")
+#snp <- read.vcfR("../Dataset/GEUVADIS.chr21.PH1PH2_465.IMPFRQFILT_BIALLELIC_PH.annotv2.genotypes.vcf")
+snp <- read.vcfR("../Dataset/GEUVADIS.chr6.PH1PH2_465.IMPFRQFILT_BIALLELIC_PH.annotv2.genotypes.vcf.gz")
 
 ################## START PREPROCESSING ##################
 start <- Sys.time()
@@ -56,5 +57,7 @@ end<-Sys.time()
 end-start 
 ################## FINISH PREPROCESSING ##################
 
-write.table(snp_loc, "/home/lffraga/Table Data/snp_loc22.txt")
-write.table(snp_inf, "/home/lffraga/Table Data/snp_inf22.txt")
+#write.table(snp_loc, "../Dataset/snp_loc21.txt")
+#write.table(snp_inf, "../Dataset/snp_inf21.txt")
+write.table(snp_loc, "../Dataset/snp_loc6.txt")
+write.table(snp_inf, "../Dataset/snp_inf6.txt")
