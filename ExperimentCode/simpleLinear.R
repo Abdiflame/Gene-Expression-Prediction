@@ -1,7 +1,7 @@
 ### Load the dataset
-BH_gene <- read.table("/home/lffraga/Table Data/BH_gene6.txt")
-BH_passed_snp <- read.table("/home/lffraga/Table Data/all_snps.txt")
-snps <- read.table("/home/lffraga/Table Data/all_inf.txt")
+BH_gene <- read.table("../Dataset/BH_gene6.txt")
+BH_passed_snp <- read.table("../Dataset/BH_passed_snps6.txt")
+snps <- read.table("../Dataset/snp_inf6.txt")
 
 snp_log1 <- t(snps)
 
@@ -21,10 +21,21 @@ sl_rsq_results_log1 <- list()
 lm_coef <- list()
 ex_data <- list()
 
-for(i in genes68)
-{
-  BH_passed_snp_tmp <- snp_log1[,na.omit(match(as.character(BH_passed_snp[,i]),colnames(snp_log1)))]
-  ex_data_refresh <- cbind(BH_passed_snp_tmp,BH_gene[,i])
+for(i in 1:length(BH_gene[,3])){
+  print(i)
+}
+
+BH_passed_snp <- BH_passed_snp[,3]
+
+for(i in genes68){}
+
+for(i in 1:length(BH_gene[,3])){
+  BH_passed_snp_tmp <- snp_log1[,na.omit(match(as.character(BH_passed_snp[i]),colnames(snp_log1)))]
+  ex_data_refresh <- cbind(BH_passed_snp_tmp,BH_gene[i,3])
+  
+
+  #BH_passed_snp_tmp <- snp_log1[,na.omit(match(as.character(BH_passed_snp[,i]),colnames(snp_log1)))]
+  #ex_data_refresh <- cbind(BH_passed_snp_tmp,BH_gene[,i])
   
   for(j in 1:k){
     ex_data <- ex_data_refresh
@@ -92,5 +103,5 @@ mean(as.numeric(l_sl_rsq_log1), na.rm = TRUE)
 sd(as.numeric(l_sl_mse_log1))
 sd(as.numeric(l_sl_rsq_log1))
 
-write.table(l_sl_mse_log1, "/home/lffraga/Results_Data/linear_mse_68.txt")
+write.table(l_sl_mse_log1, "/linear_mse_68.txt")
 write.table(l_sl_rsq_log1, "/home/lffraga/Results_Data/linear_rsq_68.txt")
