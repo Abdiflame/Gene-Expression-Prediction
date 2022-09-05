@@ -5,15 +5,15 @@ library(caret)
 #library(gbm)
 
 ### Load the dataset
-BH_gene <- read.table("/home/lffraga/Table Data/BH_gene6.txt")
-BH_passed_snp <- read.table("/home/lffraga/Table Data/BH_passed_snps6.txt")
-snps <- read.table("/home/lffraga/Table Data/snp_inf6.txt")
+BH_gene <- read.table("../Dataset/BH_gene6.txt")
+BH_passed_snp <- read.table('../Dataset/BH_passed_snps6_original.txt')
+snps <- read.table('../Dataset/snp_inf6.txt')
 
 snp_log1 <- t(snps)
 
 kfold <- 5 # Dataset K-fold CrossValidation
 k <- 5 # Iteration K-repetitions
-#folds <- sample(cut(seq(1,nrow(BH_gene)),breaks=kfold,labels=FALSE))
+folds <- sample(cut(seq(1,nrow(BH_gene)),breaks=kfold,labels=FALSE))
 
 start <- Sys.time()
 
@@ -27,7 +27,7 @@ ex_data <- list()
 lasso_lambda <- list()
 lasso_df <- list()
 
-for(i in genes68)
+for(i in dim(BH_gene)[2])
 {
   BH_passed_snp_tmp<-snp_log1[,na.omit(match(as.character(BH_passed_snp[,i]),colnames(snp_log1)))]
   ex_data<-cbind(BH_passed_snp_tmp,BH_gene[,i])
