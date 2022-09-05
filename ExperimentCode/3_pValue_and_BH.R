@@ -2,16 +2,17 @@ library(FSA)
 library(data.table)
 library(rowr)
 
-#LOAD DATASET
-cis_snps <- read.table("../Dataset/cis_snps_names_chr21.txt", header = TRUE)
-snp_inf <- read.table("../Dataset/snp_inf21.txt", header = TRUE)
-test <- read.table("../Dataset/cis_matrix_chr21.txt", header = TRUE)
+############### Load Dataset ###############
+
+cis_snps <- read.table("../Dataset/cis_snps_names_chr6.txt", header = TRUE)
+snp_inf <- read.table("../Dataset/snp_inf6.txt", header = TRUE)
+test <- read.table("../Dataset/cis_matrix_chr6.txt", header = TRUE)
 gene <- read.table("../Dataset/GD462.GeneQuantRPKM.50FN.samplename.resk10.txt",header = TRUE)
 
-#######################################
-### Start Pre-processing
-gene_n <- gene[grep("^21$", gene[,3]),-(1:4)] # Select all genes in a determined Chromosome
-gene_names <- gene[grep("^21$",gene[,3]),2] # Extract gene names
+############### Start Pre-processing ############### 
+
+gene_n <- gene[grep("^6$", gene[,3]),-(1:4)]          ## Select all genes in a determined Chromosome
+gene_names <- gene[grep("^6$",gene[,3]),2]            ## Extract gene names
 row.names(gene_n) <- gene_names
 gene_n[1:5,1:5] # Genes X Samples (Gene Expression values)
 
@@ -19,20 +20,20 @@ gene_n <- gene_n[,match(colnames(snp_inf),colnames(gene_n))]
 dim(gene_n)
 n_gene <- t(gene_n)
 dim(n_gene)
-#n_gene[1:5,1:5] # Samples X Genes (Gene Expression values)
 
 snp <- t(snp_inf)
 snp <- snp[,match(rownames(test), colnames(snp))] # Samples x SNPS
 
-### Finish Pre-processing
-#######################################
+############### Finish Pre-processing ############### 
 
 ### Log Dimension
 log_gene <- log(n_gene+(1-min(n_gene)))
 log_gene[1:5,1:5]
 ### End of Log
 
-### Getting P-Value ANOVA
+############### This part is used only for cis-SNPs ###############
+## Please comment this block if you are using trans-SNPs
+
 l <- list()
 
 for(i in 1:dim(n_gene)[2]) #columns number
@@ -43,96 +44,118 @@ for(i in 1:dim(n_gene)[2]) #columns number
 }
 
 length <- max(as.numeric(l))
-#length <- dim(snp_inf)[1]
+############### This part is used only for cis-SNPs ############### 
 
-#######################################
-start<-Sys.time()
+#length <- dim(snp_inf)[1]                                    ## for trans-SNPs
+
+############### Prepare data dimensions ############### 
 
 c<-list()
-l_p <- rep(NA, length)
-#cis_snp <- match(as.character(rownames(snp_inf)),colnames(snp))
+
+cis_snp <- match(as.character(rownames(snp_inf)),colnames(snp))
 t <- snp[,na.omit(cis_snp)]
 gene_t <- cbind(t, log_gene[,dim(n_gene)[2]])
-end <- dim(gene_t)[2]-1
-
-for(j in 1:end)
-{
-  l_p[j] <- anova(lm(gene_t[,end+1] ~ gene_t[,j]))[5][1,]
-}
-
-c <- cbind(c,l_p) #column bind, add column
-
-cis_snps_pvalue <- c
 colnames(cis_snps) <- gene_names
-#colnames(cis_snps_pvalue) <- gene_names
-dim(cis_snps_pvalue)
-dim(cis_snps)
+#end <- dim(gene_t)[2]-1                                      ## for trans-SNPs
+#end <- dim(cis_snps)[1]                                      ## for cis-SNPs
 
-end<-Sys.time()
-end-start
-
-#######################################
-### Benjamini-Hochberg Method - Start
-start<-Sys.time()
-
+############### Benjamini-Hochberg Method - Start ###############
+count <- 0
+print("START")
+BH_passed_snps_final <- rep(NA, length)
 snp_names_aux <- c()
 snp_adjpvalue_aux <- c()
-BH_passed_snps_final <- rep(NA, length)
+l_p <- rep(NA, length)
 
-auxVec <- p.adjust(cis_snps_pvalue, method = "BH")
-snp_adjpvalue_aux <- c(auxVec)                                      # Getting the adjusted p-value
-snp_names_aux <- c(as.character(rownames(snp_inf)))  # Getting the SNPs names
-df_aux <- data.frame(snp_names_aux, snp_adjpvalue_aux)
-names(df_aux) <- c("SNP", "AdjPvalue")
-dim(df_aux)
-BH_passed_snps_aux <- subset(df_aux, df_aux$AdjPvalue < 0.5)       # Applying the p-value threshold
-#BH_passed_snps_aux <- subset(df_aux, df_aux$AdjPvalue > 0.5)       # Applying the p-value threshold
-dim(BH_passed_snps_aux)
+for(i in 1:dim(gene_n)[1])
+{
+  out <- paste0("Current iteration: ", i)
+  print(out)                                                
 
-#cbind.fill <- function(...){
-#  nm <- list(...) 
-#  nm <- lapply(nm, as.matrix)
-#  n <- max(sapply(nm, nrow)) 
-#  do.call(cbind, lapply(nm, function (x) 
-#    rbind(x, matrix(, n-nrow(x), ncol(x))))) 
-#}
+  BH_passed_snp_tmp <- snp[,na.omit(match(as.character(cis_snps[,i]),colnames(snp)))]
+  ex_data <- cbind(BH_passed_snp_tmp, n_gene[,i])
+  end <- dim(ex_data)[2]-1
+  
+  for(p in 1:end)
+  {
+    l_p[p] <- anova(lm(ex_data[,end+1] ~ ex_data[,p]))[5][1,]
+  }
+  
+  cis_snps_pvalue <- as.numeric(l_p)
+  auxVec <- p.adjust(cis_snps_pvalue, method = "BH")                      # Getting the SNPs adjusted pvalue
+  #df_aux <- data.frame(auxVec)
+  #names(df_aux) <- "AdjPvalue"
+  
+  #snp_names_aux <- c(as.character(rownames(snp_inf)))                    # Getting the trans-SNPs names 
+  snp_names_aux <- c(as.character(cis_snps[,i]))                          # Getting the cis-SNPs names
+  
+  snp_adjpvalue_aux <- c(auxVec)
+  df_aux <- data.frame(snp_names_aux, snp_adjpvalue_aux)
+  names(df_aux) <- c("SNP", "AdjPvalue")
+  
+  BH_passed_snps_aux <- subset(df_aux, df_aux$AdjPvalue < 0.5)            # Applying the p-value threshold
+  BH_passed_snps_final <- cbind.fill(BH_passed_snps_final, as.character(BH_passed_snps_aux$SNP), fill = NA) # Making the final SNP's matrix
+  
+  out <- paste0("Passed SNPs: ", dim(BH_passed_snps_aux)[1])
+  print(out)  
+  
+  if(dim(BH_passed_snps_aux)[1] > 0){
+    count <- count + 1
+    out <- paste0("Passed Gene count: ", count)
+    print(out) 
+  }
+}
 
-#BH_passed_snps_final <- cbind.fill(BH_passed_snps_final, as.character(BH_passed_snps_aux$SNP), fill = NA) # Making the final SNP's matrix
-dim(BH_passed_snps_final)
-end<-Sys.time()
-end-start
-### Benjamini-Hochberg Method - End
-######################################
+################################################################
+
+#snp_names_aux <- c()
+#snp_adjpvalue_aux <- c()
+#BH_passed_snps_final <- rep(NA, length)
+
+#auxVec <- p.adjust(cis_snps_pvalue, method = "BH")
+#snp_adjpvalue_aux <- c(auxVec)                                          # Getting the adjusted p-value
+#snp_names_aux <- c(as.character(rownames(snp_inf)))                     # Getting the trans-SNPs names 
+#snp_names_aux <- c(as.character(rownames(cis_snps)))                    # Getting the cis-SNPs names
+#df_aux <- data.frame(snp_names_aux, snp_adjpvalue_aux)
+#names(df_aux) <- c("SNP", "AdjPvalue")
+#dim(df_aux)
+#BH_passed_snps_aux <- subset(df_aux, df_aux$AdjPvalue < 0.5)            # Applying the p-value threshold
+#dim(BH_passed_snps_aux)
+
+
+############### Benjamini-Hochberg Method - End ###############
 
 ### Matrix Cleaning
 BH_passed_snps_final <- BH_passed_snps_final[,-1]
-#colnames(BH_passed_snps_final) <- colnames(cis_snps) 
+colnames(BH_passed_snps_final) <- colnames(cis_snps) 
 BH_passed_snps_final <- BH_passed_snps_final[,colSums(is.na(BH_passed_snps_final)) < (nrow(BH_passed_snps_final)-1)]
 dim(BH_passed_snps_final)
+
 
 ### Counting the highest number of SNP in a gene
 countSNPS <- 0
 gene_size <- c()
 tmp = 0
 
-for(i in 1:dim(BH_passed_snps_final_master)[2]) ##BH_passed_snps_final
+for(i in 1:dim(BH_passed_snps_final)[2]) ##BH_passed_snps_final
 {
-  gene_size[i] = sum(!is.na(BH_passed_snps_final_master[,i])) ##BH_passed_snps_final
-  print(gene_size[i])
+  gene_size[i] = sum(!is.na(BH_passed_snps_final[,i])) ##BH_passed_snps_final
+  #print(gene_size[i])
   countSNPS <- countSNPS + gene_size[i]
 }
-countSNPS # Check total
+print(countSNPS) # Check total SNPs
 
 max_gene_size <- max(as.numeric(gene_size)) 
 max_gene_size # Max gene size
 
-BH_passed_snps_final_master <- BH_passed_snps_final_master[1:max_gene_size-1,] # Remove exceeding rows ## BH_passed_snps_final
+BH_passed_snps_final_master <- BH_passed_snps_final[1:max_gene_size-1,] # Remove exceeding rows ## BH_passed_snps_final
 dim(BH_passed_snps_final_master)
 
-############################################## TA BOM AQUI TB ##########################
+############### Saving tables/variables data files ###############
 
 ### Saving data
 BH_gene <- log_gene[,match(colnames(BH_passed_snps_final_master),colnames(log_gene))]  ### BH_passed_snps_final
-write.table(cis_snps_pvalue,'../Dataset/pvalue_21.txt')              ### Saving pValue 
-write.table(BH_gene, '../Dataset/BH_gene21.txt')                      ### All passed genes after (BH method)
-write.table(BH_passed_snps_aux, '../Dataset/BH_passed_snps21.txt')    ### All passed SNPs after (BH method)
+write.table(cis_snps_pvalue,'../Dataset/pvalue_6.txt')                                 ### Saving pValue 
+write.table(BH_gene, '../Dataset/BH_gene6.txt')                                        ### All passed genes after (BH method)
+write.table(BH_passed_snps_final_master, '../Dataset/BH_passed_snps6.txt')             ### All passed SNPs after (BH method)
+
