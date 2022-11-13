@@ -3,13 +3,13 @@ library(rowr)
 ## If rowr is not found, download a old version and install it by archive
 
 ### Load dataset
-snp_loc <- read.table("../Dataset/snp_loc21.txt",header = TRUE)
-snp_inf <- read.table("../Dataset/snp_inf21.txt",header = TRUE)
+snp_loc <- read.table("../Dataset/snp_loc6.txt",header = TRUE)
+snp_inf <- read.table("../Dataset/snp_inf6.txt",header = TRUE)
 gene <- read.table("../Dataset/GD462.GeneQuantRPKM.50FN.samplename.resk10.txt",header = TRUE)
 
 ### Gene expression match
 ### Select chromosome in gene expression dataset
-gene_loc <- gene[grep("^21$", gene[,3]),]
+gene_loc <- gene[grep("^6$", gene[,3]),]
 geneLocation <- gene_loc[,4]
 snps <- t(snp_inf)
 
@@ -39,14 +39,6 @@ end-start
 
 #######################################
 ### cis-Marking - Start
-#cbind.fill <- function(...){
-#  nm <- list(...) 
-#  nm <- lapply(nm, as.matrix)
-#  n <- max(sapply(nm, nrow)) 
-#  do.call(cbind, lapply(nm, function (x) 
-#    rbind(x, matrix(, n-nrow(x), ncol(x))))) 
-#}
-
 start<-Sys.time()
 
 l <- list()
@@ -74,5 +66,5 @@ end-start
 #######################################
 
 ### Saving data
-write.table(c[,-1],"../Dataset/cis_snps_names_chr21.txt")
-write.table(cis_matrix, "../Dataset/cis_matrix_chr21.txt")
+write.table(c[,-1],"../Dataset/cis_snps_names_chr6.txt")
+write.table(cis_matrix, "../Dataset/cis_matrix_chr6.txt")
