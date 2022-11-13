@@ -1,12 +1,12 @@
 library(caret)
 #library(MASS)
-#library(glmnet)
+library(glmnet)
 #library(randomForest)
 #library(gbm)
 
 ### Load the dataset
 BH_gene <- read.table("../Dataset/BH_gene6.txt")
-BH_passed_snp <- read.table('../Dataset/BH_passed_snps6_original.txt')
+BH_passed_snp <- read.table('../Dataset/BH_passed_snps6.txt')
 snps <- read.table('../Dataset/snp_inf6.txt')
 
 snp_log1 <- t(snps)
@@ -27,7 +27,7 @@ ex_data <- list()
 lasso_lambda <- list()
 lasso_df <- list()
 
-for(i in dim(BH_gene)[2])
+for(i in 1:dim(BH_gene)[2])
 {
   BH_passed_snp_tmp<-snp_log1[,na.omit(match(as.character(BH_passed_snp[,i]),colnames(snp_log1)))]
   ex_data<-cbind(BH_passed_snp_tmp,BH_gene[,i])
